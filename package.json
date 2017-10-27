@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "mocha": "^4.0.1"
+  },
+  "scripts": {
+    "test": "mocha tests/*.js"
+  }
+}
