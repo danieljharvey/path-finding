@@ -1,9 +1,9 @@
-const path = require("../path");
-
+const path = require("../src/path");
+const { Maybe } = require('tsmonad');
 const assert = require('assert')
 
 describe("Path finding", function() {
-
+	
 	describe("isPointValid", function() {
 		it("Finds invalid place on map", function() {
 			
@@ -15,16 +15,16 @@ describe("Path finding", function() {
 				[0,0,0,0]
 			]
 
-			const offLeft = path.isPointValid(map)([-1,0])
+			const offLeft = path.isPointValid(map)({x:-1,y:0})
 			assert.equal(offLeft, false)
 
-			const offTop = path.isPointValid(map)([0,-1])
+			const offTop = path.isPointValid(map)({x:0,y:-1})
 			assert.equal(offTop, false)
 
-			const offRight = path.isPointValid(map)([5,0])
+			const offRight = path.isPointValid(map)({x:5,y:0})
 			assert.equal(offRight, false)
 
-			const offBottom = path.isPointValid(map)([0,4])
+			const offBottom = path.isPointValid(map)({x:0,y:4})
 			assert.equal(offBottom, false)
 		})	
 
@@ -38,16 +38,16 @@ describe("Path finding", function() {
 				[0,0,0,0]
 			]
 
-			const topLeft = path.isPointValid(map)([0,0])
+			const topLeft = path.isPointValid(map)({x:0,y:0})
 			assert.equal(topLeft, true)
 
-			const topRight = path.isPointValid(map)([0,3])
+			const topRight = path.isPointValid(map)({x:0,y:3})
 			assert.equal(topRight, true)
 
-			const bottomLeft = path.isPointValid(map)([4,0])
+			const bottomLeft = path.isPointValid(map)({x:4,y:0})
 			assert.equal(bottomLeft, true)
 
-			const bottomRight = path.isPointValid(map)([4,3])
+			const bottomRight = path.isPointValid(map)({x:4,y:3})
 			assert.equal(bottomRight, true)
 		})	
 	})
@@ -61,17 +61,17 @@ describe("Path finding", function() {
 				[3,4]
 			]
 
-			const value1 = path.findAdjacent(map)([0,0])
-			assert.equal(value1, 1)
+			const value1 = path.findAdjacent(map)({x:0, y:0})
+			assert.deepEqual(value1, Maybe.just(1))
 
-			const value2 = path.findAdjacent(map)([0,1])
-			assert.equal(value2, 2)
+			const value2 = path.findAdjacent(map)({x:0, y:1})
+			assert.deepEqual(value2, Maybe.just(2))
 
-			const value3 = path.findAdjacent(map)([1,0])
-			assert.equal(value3, 3)
+			const value3 = path.findAdjacent(map)({x:1, y:0})
+			assert.deepEqual(value3, Maybe.just(3))
 
-			const value4 = path.findAdjacent(map)([1,1])
-			assert.equal(value4, 4)
+			const value4 = path.findAdjacent(map)({x:1, y:1})
+			assert.deepEqual(value4, Maybe.just(4))
 
 		})
 
@@ -82,8 +82,8 @@ describe("Path finding", function() {
 				[3,4]
 			]
 
-			const valueFalse = path.findAdjacent(map)([-1,0])
-			assert.equal(valueFalse, false)
+			const valueFalse = path.findAdjacent(map)({x:-1, y:0})
+			assert.deepEqual(valueFalse, Maybe.nothing())
 
 		})
 
@@ -98,11 +98,11 @@ describe("Path finding", function() {
 				[0,0,0]
 			]
 
-			const list = [[1,0],[0,0]]
+			const list = [{x:1, y:0}, {x: 0, y:0}]
 
-			const point = [0,0]
+			const point = {x:0, y:0}
 
-			const expected = [[0,0],[1,0],[0,0]]
+			const expected = [{x:0, y:0},{x:1, y:0}, {x:0, y:0}]
 
 			const actual = path.addAdjacent(map)(list)(point)
 			
@@ -117,9 +117,9 @@ describe("Path finding", function() {
 				[0,0,0]
 			]
 
-			const list = [[0,0]]
+			const list = [{x: 0, y:0}]
 
-			const point = [0,1]
+			const point = {x: 0, y:1}
 
 			const expected = []
 
@@ -129,11 +129,11 @@ describe("Path finding", function() {
 
 		})
 	})
-
+	
 	describe("removeDuplicates", function() {
 		it("Gets rid of those duplicates", function() {
 
-			const list = [[0,1],[0,0],[0,1]]
+			const list = [{x:0, y:1}, {x:0, y:0}, {x:0, y:1}]
 
 			const expected = false
 
@@ -144,7 +144,7 @@ describe("Path finding", function() {
 
 		it("Leaves those non-duplicates", function() {
 
-			const list = [[0,1],[0,0],[0,2]]
+			const list = [{x:0, y:1}, {x:0, y:0}, {x:0, y:2}]
 
 			const expected = true
 
@@ -158,9 +158,9 @@ describe("Path finding", function() {
 		it("Adds to empty list", function() {
 			const list = []
 
-			const point = [1,0]
+			const point = {x:1, y:0}
 
-			const expected = [[1,0]]
+			const expected = [{x:1, y:0}]
 
 			const actual = path.addToList(list, point)
 
@@ -168,11 +168,11 @@ describe("Path finding", function() {
 		})
 
 		it("Adds to small list", function() {
-			const list = [[1,0],[0,0]]
+			const list = [{x:1, y:0},{x:0, y:0}]
 
-			const point = [1,1]
+			const point = {x:1, y:1}
 
-			const expected = [[1,1],[1,0],[0,0]]
+			const expected = [{x:1,y:1},{x:1,y:0},{x:0,y:0}]
 
 			const actual = path.addToList(list, point)
 
@@ -182,13 +182,13 @@ describe("Path finding", function() {
 
 	describe("squaresAround", function() {
 		it("Finds them all", function() {
-			const point = [0,0]
+			const point = {x:0,y:0}
 
 			const expected = [
-				[-1, 0],
-				[1, 0],
-				[0, -1],
-				[0, 1]
+				{x:-1, y:0},
+				{x:1, y:0},
+				{x:0, y:-1},
+				{x:0, y:1}
 			]
 
 			const actual = path.squaresAround(point)
@@ -199,11 +199,11 @@ describe("Path finding", function() {
 
 	describe("isInList", function() {
 		it("Finds one that is", function() {
-			const point = [0,0]
+			const point = {x:0,y:0}
 
 			const list = [
-				[0,0],
-				[1,0]
+				{x:0,y:0},
+				{x:1,y:0}
 			]
 
 			const found = path.isInList(list, point)
@@ -212,11 +212,11 @@ describe("Path finding", function() {
 		})
 
 		it("Finds one that isn't", function() {
-			const point = [4,0]
+			const point = {x:4,y:0}
 
 			const list = [
-				[0,0],
-				[1,0]
+				{x:0,y:0},
+				{x:1,y:0}
 			]
 
 			const found = path.isInList(list, point)
@@ -235,10 +235,10 @@ describe("Path finding", function() {
 				[0,0,0,0]
 			]
 
-			const list = [[0,0]]
+			const list = [{x:0,y:0}]
 
 			const expected = [
-				[[1,0],[0,0]]
+				[{x:1,y:0},{x:0,y:0}]
 			]
 				
 			const actual = path.getMoveOptions(map)(list)
@@ -256,10 +256,10 @@ describe("Path finding", function() {
 				[0,0,0,0]
 			]
 
-			const list = [[1,0],[0,0]]
+			const list = [{x:1, y:0},{x:0, y:0}]
 
 			const expected = [
-				[[2,0],[1,0],[0,0]]
+				[{x:2, y:0}, {x:1, y:0}, {x:0, y:0}]
 			]
 				
 			const actual = path.getMoveOptions(map)(list)
@@ -276,11 +276,11 @@ describe("Path finding", function() {
 				[0,1]
 			]
 
-			const list = [[1,0]]
+			const list = [{x:1,y:0}]
 
 			const expected = [
-				[[0,0],[1,0]],
-				[[2,0],[1,0]],
+				[{x:0,y:0},{x:1,y:0}],
+				[{x:2,y:0},{x:1,y:0}]
 			]
 				
 			const actual = path.getMoveOptions(map)(list)
@@ -293,16 +293,16 @@ describe("Path finding", function() {
 	describe("findAnswerInList", function() {
 		it ("Finds one", function() {
 
-			const target = [2,2]
+			const target = {x:2,y:2}
 
 			const list = [
-				[[1,2],[3,4]],
-				[[2,1],[3,4]],
-				[[1,2],[3,4]],
-				[[2,2],[3,4]]
+				[{x:1,y:2},{x:3,y:4}],
+				[{x:2,y:1},{x:3,y:4}],
+				[{x:1,y:2},{x:3,y:4}],
+				[{x:2,y:2},{x:3,y:4}]
 			]
 
-			const expected = [[2,2],[3,4]]
+			const expected = Maybe.just([{x:2,y:2},{x:3,y:4}])
 
 			const actual = path.findAnswerInList(target)(list)
 
@@ -311,16 +311,16 @@ describe("Path finding", function() {
 
 		it ("Finds nothing", function() {
 
-			const target = [7,9]
+			const target = {x:7,y:9}
 
 			const list = [
-				[[1,2],[3,4]],
-				[[2,1],[3,4]],
-				[[1,2],[3,4]],
-				[[2,2],[3,4]]
+				[{x:1, y:2},{x:3, y:4}],
+				[{x:2, y:1},{x:3, y:4}],
+				[{x:1, y:2},{x:3, y:4}],
+				[{x:2, y:2},{x:3, y:4}]
 			]
 
-			const expected = undefined
+			const expected = Maybe.nothing()
 
 			const actual = path.findAnswerInList(target)(list)
 
@@ -333,16 +333,16 @@ describe("Path finding", function() {
 			const moveOptions = [ 
 				[
 					[ 
-						[1,2], [4,5] 
+						{x:1, y:2}, {x:4, y:5} 
 					],
 					[ 
-						[7,8], [9,10] 
+						{x:7, y:8}, {x:9, y:10} 
 					] 
 				] 
 			]
 
 			const expected = [
-				[[1,2], [4,5]], [[7,8], [9,10]]
+				[{x:1, y:2}, {x:4,y:5}], [{x:7,y:8}, {x:9,y:10}]
 			]
 
 			const actual = path.combineMoveOptions(moveOptions)
@@ -362,17 +362,17 @@ describe("Path finding", function() {
 
 			const _processMoveList = path.processMoveList(map)
 
-			const start = [0,0]
+			const start = {x:0,y:0}
 
-			const end = [2,2]
+			const end = {x:2,y:2}
 
-			const expected = false;
+			const expected = Maybe.nothing();
 
 			const startList = [[start]]
 
 			const actual = path.processMoveList(map)(startList)(end)
 
-			assert.equal(actual, expected)
+			assert.deepEqual(actual, expected)
 		})
 
 		it ("Very quickly wins", function() {
@@ -383,11 +383,11 @@ describe("Path finding", function() {
 
 			const _processMoveList = path.processMoveList(map)
 
-			const start = [0,0]
+			const start = {x:0,y:0}
 
-			const end = [1,0]
+			const end = {x:1,y:0}
 
-			const expected = [[0,0],[1,0]]
+			const expected = Maybe.just([{x:0,y:0},{x:1,y:0}])
 
 			const startList = [[start]]
 
@@ -405,19 +405,19 @@ describe("Path finding", function() {
 				[0,0,0,0]
 			]
 
-			const start = [0,0]
+			const start = {x:0,y:0}
 
-			const end = [2,2]
+			const end = {x:2,y:2}
 
-			const expected = [
-				[0,0],
-				[1,0],
-				[2,0],
-				[3,0],
-				[3,1],
-				[3,2],
-				[2,2]
-			];
+			const expected = Maybe.just([
+				{x:0,y:0},
+				{x:1,y:0},
+				{x:2,y:0},
+				{x:3,y:0},
+				{x:3,y:1},
+				{x:3,y:2},
+				{x:2,y:2}
+			]);
 
 			const startList = [[start]]
 
@@ -435,19 +435,19 @@ describe("Path finding", function() {
 				[0,0,0,1]
 			]
 
-			const start = [2,0]
+			const start = {x:2, y:0}
 
-			const end = [0,0]
+			const end = {x:0, y:0}
 
-			const expected = [
-				[2,0],
-				[2,1],
-				[2,2],
-				[1,2],
-				[0,2],
-				[0,1],
-				[0,0]
-			];
+			const expected = Maybe.just([
+				{x:2, y:0},
+				{x:2, y:1},
+				{x:2, y:2},
+				{x:1, y:2},
+				{x:0, y:2},
+				{x:0, y:1},
+				{x:0, y:0}
+			]);
 
 			const startList = [[start]]
 
@@ -473,9 +473,9 @@ describe("Path finding", function() {
 				[0,1,0,0]
 			]
 
-			const start = [0,0]
+			const start = {x:0, y:0}
 
-			const end = [11,3]
+			const end = {x:11, y:3}
 
 			const expectedLength = 23
 
@@ -483,7 +483,12 @@ describe("Path finding", function() {
 
 			const actual = path.processMoveList(map)(startList)(end)
 
-			assert.equal(actual.length, expectedLength)
+			const value = actual.caseOf({
+				just: value => value,
+				nothing: () => false
+			})
+
+			assert.equal(value.length, expectedLength)
 		})
 	})
 	

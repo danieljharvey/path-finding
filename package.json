@@ -1,9 +1,22 @@
 {
   "dependencies": {
+    "@types/lodash": "^4.14.80",
     "lodash": "^4.17.4",
-    "mocha": "^4.0.1"
+    "mocha": "^4.0.1",
+    "ts-mocha": "^1.0.3",
+    "tsmonad": "^0.8.0",
+    "typescript": "^2.5.3"
   },
   "scripts": {
-    "test": "mocha tests/*.js"
-  }
+    "test": "ts-mocha tests/*.js",
+    "tsc": "tsc",
+    "tsc:watch": "tsc -w"
+  },
+  "name": "path-finding",
+  "version": "0.1.0",
+  "description": "Path finding things",
+  "main": "index.js",
+  "repository": "https://github.com/danieljharvey/path-finding",
+  "author": "Daniel Harvey <danieljamesharvey@gmail.com>",
+  "license": "MIT"
 }
