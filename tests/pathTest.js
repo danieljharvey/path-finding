@@ -328,29 +328,6 @@ describe("Path finding", function() {
 		})
 	})
 
-	describe("getMultipleMoveOptions", function() {
-		it("Combines two sets of answers correctly", function() {
-			const moveOptions = [ 
-				[
-					[ 
-						{x:1, y:2}, {x:4, y:5} 
-					],
-					[ 
-						{x:7, y:8}, {x:9, y:10} 
-					] 
-				] 
-			]
-
-			const expected = [
-				[{x:1, y:2}, {x:4,y:5}], [{x:7,y:8}, {x:9,y:10}]
-			]
-
-			const actual = path.combineMoveOptions(moveOptions)
-
-			assert.deepEqual(actual, expected)
-		})
-	})
-
 	describe("It does the whole thing", function() {
 		it ("Very quickly fails", function() {
 			const map = [

@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@types/lodash": "^4.14.80",
+    "@types/node": "^8.0.47",
     "lodash": "^4.17.4",
     "mocha": "^4.0.1",
     "ts-mocha": "^1.0.3",

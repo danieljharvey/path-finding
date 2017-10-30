@@ -78,9 +78,9 @@ const filterDuplicates = (arr: PointList) : Boolean => {
 
 const pointMatch = (matchPoint: Point) => (point: Point) => (matchPoint.x==point.x && matchPoint.y==point.y)
 
-const isInList = (list: PointList, point: Point) => {
+const isInList = (list: PointList, point: Point) : Boolean => {
 	const _pointMatch = pointMatch(point)
-	return (list.filter(_pointMatch).length)
+	return (list.filter(_pointMatch).length > 0)
 }
 
 const getMoveOptions = (map: Map) => (list: PointList) : Array<PointList> => {
@@ -92,18 +92,11 @@ const getMoveOptions = (map: Map) => (list: PointList) : Array<PointList> => {
 			.filter(filterDuplicates)
 }
 
-const combineMoveOptions = (moveOptions: PointPile) : Array<PointList> => {
-	return _.flatten(_.reduce((total, lists: Array<PointList>) => {
-		return [...total, ...lists]
-	}, [], moveOptions))
-}
-
 // try out all possible and return new list of options
 const getMultipleMoveOptions = (map: Map) => (lists: Array<PointList>) : Array<PointList> => {
-	return combineMoveOptions(_.map(lists, list => {
-		const moveOptions = getMoveOptions(map)(list)
-		return moveOptions
-	}))
+	return _.flatMap(lists, list => {
+		return getMoveOptions(map)(list)
+	})
 }
 
 const findAnswer = (targetPoint: Point) => (potentialAnswer: PointList) => (pointMatch(potentialAnswer[0])(targetPoint))
@@ -147,7 +140,6 @@ module.exports = {
 	addAdjacent,
 	isPointValid,
 	isInList,
-	combineMoveOptions,
 	processMoveList,
 	findAnswerInList
 }
