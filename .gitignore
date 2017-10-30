@@ -60,3 +60,5 @@ typings/
 # osx bums
 .DS_Store
 
+# compiled JS
+/public/**/*.js
