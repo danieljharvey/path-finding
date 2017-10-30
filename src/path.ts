@@ -8,24 +8,7 @@ interface Point {
 
 type PointList = Array<Point>
 
-type PointPile = Array<Array<PointList>>
-
 type Map = Array<Array<Number>>
-
-const map: Map = [
-	[0,0,0,0],
-	[0,1,1,1],
-	[0,1,0,0],
-	[0,0,0,0]
-]
-
-const start: Point = {x:0,y:0}
-
-const end: Point = {x:2,y:2}
-
-const thing = [
-	start
-]
 
 const isPointValid = (map: Map) => (point: Point) : Boolean => {
 	const {x, y} = point
@@ -76,7 +59,7 @@ const filterDuplicates = (arr: PointList) : Boolean => {
 	return (problems.length < 1)
 }
 
-const pointMatch = (matchPoint: Point) => (point: Point) => (matchPoint.x==point.x && matchPoint.y==point.y)
+const pointMatch = (matchPoint: Point) => (point: Point) : Boolean => (matchPoint.x==point.x && matchPoint.y==point.y)
 
 const isInList = (list: PointList, point: Point) : Boolean => {
 	const _pointMatch = pointMatch(point)
@@ -99,7 +82,7 @@ const getMultipleMoveOptions = (map: Map) => (lists: Array<PointList>) : Array<P
 	})
 }
 
-const findAnswer = (targetPoint: Point) => (potentialAnswer: PointList) => (pointMatch(potentialAnswer[0])(targetPoint))
+const findAnswer = (targetPoint: Point) => (potentialAnswer: PointList) : Boolean => (pointMatch(potentialAnswer[0])(targetPoint))
 
 const findAnswerInList = (targetPoint: Point) => (list: Array<PointList>) : Maybe<PointList> => {
 	const _findAnswer = findAnswer(targetPoint)
